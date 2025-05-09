@@ -106,7 +106,7 @@ jobs:
         run: |
           set +e
           if [ "${{ inputs.msvc-toolset-architecture }}" = "arm64" ]; then
-            vcvars="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/vc/auxiliary/build/vcvarsarm64.bat"
+            vcvars="/c/Program Files/Microsoft Visual Studio/2022/Enterprise/vc/auxiliary/build/vcvarsarm64.bat"
           else
             vcvars="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/vc/auxiliary/build/vcvars64.bat"
           fi
@@ -122,8 +122,13 @@ jobs:
       - name: 'Install toolchain and dependencies'
         run: |
           # Run Visual Studio Installer
+          if [ "${{ inputs.msvc-toolset-architecture }}" = "arm64" ]; then
+            install_path="C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+          else
+            install_path="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+          fi
           '/c/Program Files (x86)/Microsoft Visual Studio/Installer/vs_installer.exe' \
-            modify --quiet --installPath 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise' \
+            modify --quiet --installPath "${install_path}" \
             --add Microsoft.VisualStudio.Component.VC.${{ inputs.msvc-toolset-version }}.${{ inputs.msvc-toolset-architecture }}
         if: steps.toolchain-check.outputs.toolchain-installed != 'true'
 
